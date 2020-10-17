@@ -18,65 +18,61 @@ class SocketServerEvent {
 
     this.rateLimiter = new RateLimiterMemory({
       points: 10,
-      duration:15,
+      duration: 15
     });
 
     this.initialize();
   }
 
   init(client) {
+    client.on(this.SocketConstants.INIT, async () => {
+      let token = this.SocketUtils.handleToken(client);
+      let jwtMessage = this.jwt.verify(token, this.secret);
+      let { ID } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
 
-      client.on(this.SocketConstants.INIT, async () => {
- 
-        let token = this.SocketUtils.handleToken(client);
-        let jwtMessage = this.jwt.verify(token, this.secret);
-        let { ID, User : {nome} } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
+      try {
+        await this.rateLimiter.consume(client.handshake.address);
+      } catch (rejRes) {
+        // On flood
+        this.logger.warn(`[API] User ${client.handshake.address} has sent too many messages in a short time.`);
+        await this.io.to(ID).emit(this.SocketConstants.FLOOD, { time: 5000 });
+      }
 
-        try {
-          await this.rateLimiter.consume(client.handshake.address);
-        } catch (rejRes) {
-          // On flood
-          this.logger.warn(`[API] User ${client.handshake.address} has sent too many messages in a short time.`)
-          await this.io.to(ID).emit(this.SocketConstants.FLOOD, { time: 5000});
-        }
+      const data = {
+        Token: token,
+        ClientId: ID,
+        ID: ID
+      };
 
-        const data = {
-          Token: token,
-          ClientId: ID,
-          ID: ID
-        }
-
-        let status = await this.SocketUtils.getChatStatus(ID)
-        if (status){
-          await this.InputMessageUtils.sendMessage(data);
-        }
-      });
-
-
+      let status = await this.SocketUtils.getChatStatus(ID);
+      if (status) {
+        await this.InputMessageUtils.sendMessage(data);
+      }
+    });
   }
 
   send(client) {
     client.on(this.SocketConstants.SEND, async (data, callback) => {
       let token = this.SocketUtils.handleToken(client);
       let jwtMessage = '';
-      try{
+      try {
         jwtMessage = this.jwt.verify(token, this.secret);
       }
-      catch(err){
+      catch (err) {
         console.log('err expired', err);
-        if(err.name === 'TokenExpiredError') {
-        const jwtMessage = jwt.verify(token, this.secret, {ignoreExpiration: true} );
-        let {ID} = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
-        this.io.to(ID).emit(this.SocketConstants.EXPIRED);
-        return;
+        if (err.name === 'TokenExpiredError') {
+          const jwtMessage = jwt.verify(token, this.secret, { ignoreExpiration: true });
+          let { ID } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
+          this.io.to(ID).emit(this.SocketConstants.EXPIRED);
+          return;
         }
       }
-      let {ID} = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
+      let { ID } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
       try {
         await this.rateLimiter.consume(client.handshake.address);
         data.Token = token;
         data.ClientId = ID;
-        data.ID = ID ;
+        data.ID = ID;
         this.PropertyUtils.setValue(data, 'Time.Front.End', this.PropertyUtils.getTimeStamp());
         if (typeof callback === 'function') callback('pong');
         await this.InputMessageUtils.sendMessage(data);
@@ -104,8 +100,8 @@ class SocketServerEvent {
         let { ID } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
         client.leave(ID);
         this.ChatController.setInactive(client.id);
-      } catch(err) {
-        console.log('[Server Event] Disconnect event received:', err)
+      } catch (err) {
+        console.log('[Server Event] Disconnect event received:', err);
       }
     });
   }
@@ -114,7 +110,7 @@ class SocketServerEvent {
     client.on(this.SocketConstants.UPDATE_CONNECT, async () => {
       let token = this.SocketUtils.handleToken(client);
       let jwtMessage = this.jwt.verify(token, this.secret);
-      let {ID} = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
+      let { ID } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
       const Chat = await this.Chat.findOne({ ID });
       if (Chat) {
         client.join(ID);
@@ -127,17 +123,15 @@ class SocketServerEvent {
   reconnect(client) {
     client.on('sendRe', (data) => {
       console.log('Recebi evento de reconnect do front');
-      console.log('\nDATA DO FRONT: ',data);
+      console.log('\nDATA DO FRONT: ', data);
       let token = this.SocketUtils.handleToken(client);
       let jwtMessage = this.jwt.verify(token, this.secret);
       let { ID } = this.EncryptUtils.decryptMessage(jwtMessage.Payload);
       this.io.to(ID).emit('reconnect', data);
-
     });
   }
 
   initialize() {
-    
     this.io.on(this.SocketConstants.CONNECTION, async (client) => {
       this.client = client;
 
@@ -147,23 +141,21 @@ class SocketServerEvent {
 
       console.log('Auth', Auth);
 
-      if (Auth.Type){ // Worker
-        console.log('Worker')
-      } else { 
+      if (Auth.Type) { // Worker
+        console.log('Worker');
+      } else {
         client.join(Auth.ID);
-        
         try {
           await this.rateLimiter.consume(client.handshake.query.token);
         } catch (rejRes) {
           // On flood
-          await this.io.to(Auth.ID).emit(this.SocketConstants.FLOOD, { time: 5000});
+          await this.io.to(Auth.ID).emit(this.SocketConstants.FLOOD, { time: 5000 });
           client.error('Too many requests');
           client.disconnect(true);
-          return {message: 'Too many requests'};
+          return { message: 'Too many requests' };
         }
-        
       }
-    
+
       this.init(client);
       this.reconnect(client);
       this.send(client);

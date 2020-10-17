@@ -10,14 +10,13 @@ class JwtSocketMiddleware {
   }
 
   process(socket, next) {
-
     let token = '';
-    if(socket.handshake.headers.cookie){
+    if (socket.handshake.headers.cookie) {
       let cookie = socket.handshake.headers.cookie;
       token = this.SocketUtils.getToken(cookie);
-    } else if (socket.handshake.query.token){
+    } else if (socket.handshake.query.token) {
       token = socket.handshake.query.token;
-    } else {      
+    } else {
       return next('Invalid cookie');
     }
 
@@ -25,7 +24,7 @@ class JwtSocketMiddleware {
       if (err) {
         return next(err);
       }
-    next();
+      next();
     });
   }
 

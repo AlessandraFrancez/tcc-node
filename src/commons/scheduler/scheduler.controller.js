@@ -15,7 +15,8 @@ class Scheduler extends BaseLog {
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    // await this.Mailer.scheduledMailer();
+    this.runTweetsJob(false, false);
+    this.runDataAnalysis(false, false);
   }
 
   async scheduleJob(cronParam, job) {

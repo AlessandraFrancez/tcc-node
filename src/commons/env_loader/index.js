@@ -26,7 +26,7 @@ class EnvLoader {
       case 'testing':
         return `${this.envpath}/.env.testing`;
       default:
-        console.log('Case: Default')
+        console.log('Case: Default');
         return `${this.envpath}/.env.local`;
     }
   }

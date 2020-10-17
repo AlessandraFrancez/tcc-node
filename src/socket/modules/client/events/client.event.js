@@ -13,7 +13,6 @@ class SocketClientEvent {
     data.Token = Token;
     Client.emit(Event, ClientId, data);
   }
-
 }
 
 module.exports = new SocketClientEvent();

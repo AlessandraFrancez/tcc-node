@@ -2,7 +2,6 @@
 
 class JwtMiddleware {
   constructor() {
-    super();
     this.secret = process.env.JWT_SECRET;
     this.jwt = require('jsonwebtoken');
     this.process = this.process.bind(this);
