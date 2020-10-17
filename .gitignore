@@ -1,0 +1,16 @@
+# Packages
+node_modules
+
+# package lock
+package-lock.json
+
+# yarn lock
+yarn.lock
+
+# Environment file
+.env
+
+oracle-drivers/*
+
+settings.json
+.vscode/
