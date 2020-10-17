@@ -1,7 +1,6 @@
 'use strict';
 
 const logger = require('../logger/logger');
-// const WatsonContants = require('../constants/watson.constants');
 
 module.exports = (err, req, res, next) => {
   logger.error(err);

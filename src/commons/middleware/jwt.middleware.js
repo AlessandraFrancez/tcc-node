@@ -29,7 +29,7 @@ class JwtMiddleware {
         next();
       }
     } catch (err) {
-      next(new Error(this.messages.TOKEN_EXPIRED);
+      next(new Error(this.messages.TOKEN_EXPIRED));
     }
   }
 

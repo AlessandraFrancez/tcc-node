@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ConfigSchema = new Schema({
-  query: { type: String, required: true},
-  tweets: { type: Number, required: true},
-  exclude: { type: Array}
+  query: { type: String, required: true },
+  tweets: { type: Number, required: true },
+  exclude: { type: Array }
 }, {
   timestamps: true
 });

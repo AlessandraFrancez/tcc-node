@@ -9,6 +9,7 @@ yarn.lock
 
 # Environment file
 .env
+src/env/
 
 settings.json
 .vscode/

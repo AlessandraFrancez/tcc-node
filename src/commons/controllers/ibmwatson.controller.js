@@ -2,7 +2,6 @@
 
 class IBMController {
   constructor() {
-    this.watson = require('ibm-watson');
     this.axios = require('axios');
     this.logger = require('../logger/logger');
     this.api_key = process.env.WATSON_ASSISTANT_API_KEY;
@@ -13,14 +12,14 @@ class IBMController {
       sessionId: '',
       time: ''
     }; // TODO
+    this.tweets = require('../../models/tweets.model');
   }
 
-  async translate(text){
-
+  async translate(text) {
     const res = await this.axios({
       method: 'post',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
       url: `${process.env.WATSON_TRANSLATOR_URL}/v3/translate?version=${process.env.WATSON_TRANSLATOR_VERSION}`,
       auth: {
@@ -29,7 +28,7 @@ class IBMController {
       },
       data: {
         text,
-        model_id:"pt-en"
+        model_id: 'pt-en'
       }
     });
 
@@ -38,11 +37,11 @@ class IBMController {
     return res.data;
   }
 
-  async analyzeTone(text){
+  async analyzeTone(text) {
     const res = await this.axios({
       method: 'post',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
       url: `${process.env.WATSON_TONE_URL}/v3/tone?version=${process.env.WATSON_TONE_VERSION}`,
       auth: {
@@ -55,12 +54,11 @@ class IBMController {
     });
 
     this.logger.info(res.data);
-    return res.data
+    return res.data;
   }
 
   /** @description Creates Watson Assistant session */
   async createSession() {
-
     const res = await this.axios({
       method: 'post',
       auth: {
@@ -77,16 +75,15 @@ class IBMController {
     } else {
       return false;
     }
-
   }
 
-   /** @description Sends message to Watson Assistant */
-  async sendMessage(text){
+  /** @description Sends message to Watson Assistant */
+  async sendMessage(text) {
     const sessionId = await this.createSession();
 
     const res = await this.axios({
       method: 'post',
-      headers: {'content-type':'application/json'},
+      headers: { 'content-type': 'application/json' },
       url: `${this.baseUrl}/v2/assistants/${this.assistant_id}/sessions/${sessionId}/?version=${this.version}`,
       data: {
         input: {
@@ -97,11 +94,43 @@ class IBMController {
           }
         }
       }
-    })
+    });
 
     return res.data;
   }
 
+  async runAssistant(status) {
+    const tweets = await this.tweets.find({ status });
+    tweets.forEach(async tweet => {
+      await this.sendMessage(tweet.text);
+      tweet.status = 'assistant';
+      await tweet.save();
+    });
+  }
+
+  async runTranslate(status) {
+    const tweets = await this.tweets.find({ status });
+    tweets.forEach(async tweet => {
+      await this.translate(tweet.text);
+      tweet.status = 'translated';
+      await tweet.save();
+    });
+  }
+
+  async runToneAnalyzer(status) {
+    const tweets = await this.tweets.find({ status });
+    tweets.forEach(async tweet => {
+      await this.analyzeTone(tweet.text);
+      tweet.status = 'tone';
+      await tweet.save();
+    });
+  }
+
+  async runDataAnalysis() {
+    await this.runAssistant('sanitized');
+    await this.runTranslate('assistant');
+    await this.runToneAnalyzer('translated');
+  }
 }
 
-module.exports = new IBMController()
+module.exports = new IBMController();

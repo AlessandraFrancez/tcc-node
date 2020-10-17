@@ -7,61 +7,73 @@ class Scheduler extends BaseLog {
   constructor() {
     super();
     this.moment = require('moment');
-    this.ConfigurationFactory = require('../factorys/configuration.factory');
     this.cron = require('node-cron');
-    this.SchedulerUtils = require('../utils/scheduler.utils');
-    this.Mailer = require('../../mailer/mailer');
-
-    this.exactDateJob = false;
-    this.checkConfigJob = false;
-    this.runTestsJob = false;
+    this.ConfigurationFactory = require('../factories/configuration.factory');
+    // this.Mailer = require('../../mailer/mailer');
   }
-//WIP
+  // WIP
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    this.dailyEmails(false);
     // await this.Mailer.scheduledMailer();
   }
 
-  async scheduleJob(cronParam, job){
+  async scheduleJob(cronParam, job) {
     const task = await this.cron.schedule(cronParam, job, {
       scheduled: true,
-      timezone: "America/Sao_Paulo"
+      timezone: 'America/Sao_Paulo'
     });
     return task;
   }
 
-  async planJobs(frequency, job, frequencyType = 'hours'){
+  async planJobs(frequency, job, frequencyType = 'hours') {
     const cronParam = this.PropertyUtils.getCronHour(frequency, frequencyType);
     this.logger.verbose(`[PlanJob] Job: ${job.name} set to ${cronParam}`);
-    return await this.scheduleJob(cronParam, job);
+    return this.scheduleJob(cronParam, job);
   }
 
-  async cancelJobs(JobName){
+  async cancelJobs(JobName) {
     this.schedule.cancelJob(JobName);
   }
 
-  async dailyEmails(enabled = true){
-    if (enabled){
-      const {EMAIL_TIME } = global.CONFIGURATION;
-      const { hour, minute } = this.SchedulerUtils.getTimeFromString(EMAIL_TIME);
+  async runTweetsJob(enabled = true, scheduled = true) {
+    if (enabled) {
+      const twitterController = require('../controllers/twitter.controller');
+      const TwitterJob = async () => {
+        this.logger.info('[Scheduler] Starting Twitter Job');
+        await twitterController.getTweetQueries();
+        this.logger.info('[Scheduler] Twitter Job finished successfully.');
+      };
 
-      const cronParam = `0 ${minute} ${hour} * * *`;
-
-      const dailyEmailsJob = async () => {
-        this.logger.info(`[Mailer] Scheduled email job starting`);
-        //TODO
-        this.logger.info(`[Mailer] ScheduledMailerJob executed successfully.`);
+      if (scheduled) {
+        const { TWEET_EXTRACTION_FREQUENCY } = global.CONFIGURATION;
+        await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, TwitterJob);
+      } else {
+        TwitterJob();
       }
-
-      // console.log(cronParam);
-      this.exactDateJob = await this.scheduleJob(cronParam, dailyEmailsJob);
     }
   }
 
-  async updateConfiguration(enabled = true, scheduleOn = true){
-    if (enabled){
+  async runAnalysisJob(enabled = true, scheduled = true) {
+    if (enabled) {
+      const WatsonController = require('../controllers/ibmwatson.controller');
+      const DataJob = async () => {
+        this.logger.info('[Scheduler] Starting Twitter Job');
+        await WatsonController.runDataAnalysis();
+        this.logger.info('[Scheduler] Twitter Job finished successfully.');
+      };
+
+      if (scheduled) {
+        const { TWEET_EXTRACTION_FREQUENCY } = global.CONFIGURATION;
+        await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, DataJob);
+      } else {
+        DataJob();
+      }
+    }
+  }
+
+  async updateConfiguration(enabled = true, scheduleOn = true) {
+    if (enabled) {
       const UpdateConfigurationJob = async () => {
         const currentConfig = global.CONFIGURATION;
         await this.ConfigurationFactory._CreateConfiguration();
@@ -70,11 +82,10 @@ class Scheduler extends BaseLog {
 
         for (let job of configKeys) {
           switch (job) {
-            case 'EMAIL_TIME':
-              if (currentConfig.EMAIL_TIME !== newConfig.EMAIL_TIME) {
-                this.logger.info(`[Mailer] Email time changed to ${newConfig.EMAIL_TIME}`);
+            case 'TWEET_EXTRACTION_FREQUENCY':
+              if (currentConfig.TWEET_EXTRACTION_FREQUENCY !== newConfig.TWEET_EXTRACTION_FREQUENCY) {
                 this.exactDateJob.destroy();
-                this.dailyEmails();
+                this.runTweetsJob();
               }
               break;
             case 'CHECK_CONFIG_FREQUENCY':
@@ -83,24 +94,24 @@ class Scheduler extends BaseLog {
                 this.updateConfiguration();
               }
               break;
-            case 'TESTS_FREQUENCY':
-              if (currentConfig.TESTS_FREQUENCY !== newConfig.TESTS_FREQUENCY) {
+            case 'DATA_ANALYSIS_FREQUENCY':
+              if (currentConfig.DATA_ANALYSIS_FREQUENCY !== newConfig.DATA_ANALYSIS_FREQUENCY) {
                 this.runTestsJob.destroy();
-                this.healthcheckTests();
+                this.runAnalysisJob();
               }
               break;
             default:
               break;
           }
         }
-      }
+      };
+
       UpdateConfigurationJob();
-      if (scheduleOn){
+      if (scheduleOn) {
         const { CHECK_CONFIG_FREQUENCY } = global.CONFIGURATION;
         this.checkConfigJob = this.planJobs(CHECK_CONFIG_FREQUENCY, UpdateConfigurationJob, 'minutes');
       }
     }
   }
-
 }
 module.exports = new Scheduler();

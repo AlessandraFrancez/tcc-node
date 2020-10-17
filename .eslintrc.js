@@ -29,10 +29,11 @@ module.exports = {
     'no-trailing-spaces': [ERROR],
     'no-case-declarations': OFF,
     'no-path-concat': OFF,
-    'no-unused-expressions': OFF,
+    'no-unused-expressions': 1,
     'no-multi-str': OFF,
     camelcase: OFF,
-    'require-atomic-updates': OFF
+    'require-atomic-updates': OFF,
+    'no-unused-vars': 1
   },
   globals: {
     Promise: true,
