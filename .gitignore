@@ -10,7 +10,5 @@ yarn.lock
 # Environment file
 .env
 
-oracle-drivers/*
-
 settings.json
 .vscode/

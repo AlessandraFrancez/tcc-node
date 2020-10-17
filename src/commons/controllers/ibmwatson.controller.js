@@ -1,8 +1,6 @@
 'use strict';
 
-const BaseController = require('./base.controller');
-
-class IBMController extends BaseController {
+class IBMController {
   constructor() {
     this.watson = require('ibm-watson');
     this.axios = require('axios');

@@ -2,7 +2,7 @@
 
 class ConfigurationFactory {
   constructor() {
-    this.configModel = require('../../models/config.model');
+    // this.configModel = require('../../models/config.model');
     this.logger = require('../logger/logger');
   }
 

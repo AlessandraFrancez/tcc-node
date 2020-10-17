@@ -1,8 +1,6 @@
 'use strict';
 
-const HttpController = require('../controllers/http.controller');
-
-class JwtMiddleware extends HttpController {
+class JwtMiddleware {
   constructor() {
     super();
     this.secret = process.env.JWT_SECRET;
@@ -31,7 +29,7 @@ class JwtMiddleware extends HttpController {
         next();
       }
     } catch (err) {
-      next(new this.HttpError(this.messages.TOKEN_EXPIRED, this.WatsonConstants.CODE_INVALID_REQUEST, { token, error: err.message }));
+      next(new Error(this.messages.TOKEN_EXPIRED);
     }
   }
 

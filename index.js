@@ -21,7 +21,7 @@ class App {
     this.cors = require('cors');
     this.middlewares();
     this.routes();
-    this.scheduler();
+    // this.scheduler();
     this.initialize();
     this.mailer = require('./src/mailer/mailer');
 
@@ -78,12 +78,12 @@ class App {
     this.express.use('*', this.errorHandler);
   }
 
-  scheduler() {
-    if (process.env.NODE_ENV !== 'testing'){
-      const Scheduler = require('./src/commons/scheduler/scheduler.controller');
-      Scheduler.initialize();
-    }
-  }
+  // scheduler() {
+  //   if (process.env.NODE_ENV !== 'testing'){
+  //     const Scheduler = require('./src/commons/scheduler/scheduler.controller');
+  //     Scheduler.initialize();
+  //   }
+  // }
 
   async initialize() {
     try {

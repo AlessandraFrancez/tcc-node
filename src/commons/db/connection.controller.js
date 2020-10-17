@@ -127,44 +127,6 @@ class ConnectionController extends BaseController {
     }
   }
 
-  async testEnv(){
-    let status;
-    switch(process.env.NODE_ENV){
-      case 'production':
-        let prod = [];
-        const hosts = process.env.DB_REPLICASET_HOST.split(',');
-        for (let i = 0; i < hosts.length; i++) {
-          let connUrl = 'mongodb://' + this.dbHost + ':' + this.dbPass + '@' + hosts[i] + '/' + this.dbName + '?authSource=admin';
-          try{
-            const conn = await mongoose.createConnection(connUrl);
-            status = conn.readyState === 1 ? true : false
-            conn.close();
-          } catch(err) {
-            let log = {type: 'mongodb', message: err.message};
-            this.logger.error('[MongoDB] Error during healthcheck', log)
-            status = false;
-          }
-          prod.push({host: hosts[i], status })
-        }
-        return prod;
-      default:
-        try{
-          const connectionUrl = this._getConnectionUrl();
-          const conn = await mongoose.createConnection(connectionUrl);
-
-          status = conn.readyState === 1 ? true : false;
-          conn.close();
-        } catch(err){
-          let log = {type: 'mongodb', message: err.message}
-          this.logger.error('[MongoDB] Error during healthcheck', log)
-        }
-        return {
-          host: this.dbHost,
-          status
-        }
-    }
-  }
-
   hasConnection() {
     return this.connection.readyState === 1;
   }
