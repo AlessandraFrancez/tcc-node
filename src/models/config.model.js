@@ -6,8 +6,7 @@ const Schema = mongoose.Schema;
 const ConfigSchema = new Schema({
   query: { type: String, required: true},
   tweets: { type: Number, required: true},
-  exclude: { type: Array},
-  createdAt: { type: Date, expires: 60 * 60 * 24 * 30 * 6, default: Date.now }
+  exclude: { type: Array}
 }, {
   timestamps: true
 });
