@@ -58,9 +58,9 @@ class Scheduler extends BaseLog {
     if (enabled) {
       const WatsonController = require('../controllers/ibmwatson.controller');
       const DataJob = async () => {
-        this.logger.info('[Scheduler] Starting Twitter Job');
+        this.logger.info('[Scheduler] Starting Data Analysis Job');
         await WatsonController.runDataAnalysis();
-        this.logger.info('[Scheduler] Twitter Job finished successfully.');
+        this.logger.info('[Scheduler] Data analysis Job finished successfully.');
       };
 
       if (scheduled) {
