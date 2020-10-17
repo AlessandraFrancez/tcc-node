@@ -13,6 +13,7 @@ class IBMController {
       time: ''
     }; // TODO
     this.tweets = require('../../models/tweets.model');
+    this.sanitizationController = require('./sanitization.controller');
   }
 
   async translate(text) {
@@ -127,6 +128,7 @@ class IBMController {
   }
 
   async runDataAnalysis() {
+    await this.sanitizationController.handleText('raw');
     await this.runAssistant('sanitized');
     await this.runTranslate('assistant');
     await this.runToneAnalyzer('translated');
