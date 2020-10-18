@@ -5,6 +5,8 @@ TODO
 - Trocar jwt secret
 - Tirar links http(s)
 - Configurar sinônimos das entidades com o nome dos usuários (ex: @vivobr)
+- Pegar spelling corrections do Watson Assistant
+- Perguntar se é uma boa tradução
 - Chamar integrações OK
 - Oauth1 pro Twitter - ver se tem wrapper OK
 - Outro config model para os cronjobs das extrações OK

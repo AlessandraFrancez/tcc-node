@@ -62,35 +62,37 @@ class TwitterController {
       tweet_mode: 'extended'
     }, function (error, tweets, response) {
       self.logger.info(typeof tweets);
-      console.log(tweets);
-      tweets.statuses.forEach(async item => {
-        const tweet = {};
+      if (tweets && tweets.statuses) {
+        tweets.statuses.forEach(async item => {
+          const tweet = {};
 
-        tweet['status'] = 'raw';
-        tweet['query'] = query;
-        tweet['id'] = item['id_str'];
-        tweet['created_at'] = item['created_at'];
-        tweet['text'] = item['full_text'];
-        tweet['entities'] = item['entities'];
-        tweet['language'] = item['lang'];
-        tweet['user_id'] = item['user']['id_str'];
-        tweet['followers_count'] = item['user']['followers_count'];
-        tweet['friends_count'] = item['user']['friends_count'];
-        tweet['place'] = item['place'];
-        tweet['verified'] = item['user']['verified'];
-        tweet['retweet_count'] = item['retweet_count'];
-        tweet['favorite_count'] = item['favorite_count'];
+          tweet['status'] = 'raw';
+          tweet['query'] = query;
+          tweet['id'] = item['id_str'];
+          tweet['created_at'] = item['created_at'];
+          tweet['text'] = item['full_text'];
+          tweet['entities'] = item['entities'];
+          tweet['language'] = item['lang'];
+          tweet['user_id'] = item['user']['id_str'];
+          tweet['followers_count'] = item['user']['followers_count'];
+          tweet['friends_count'] = item['user']['friends_count'];
+          tweet['place'] = item['place'];
+          tweet['verified'] = item['user']['verified'];
+          tweet['retweet_count'] = item['retweet_count'];
+          tweet['favorite_count'] = item['favorite_count'];
 
-        const exists = await self.tweets.countDocuments({ id: tweet._id });
+          const exists = await self.tweets.countDocuments({ id: tweet.id });
 
-        if (exists) {
-          count.repeat += 1;
-        } else {
-          count.new += 1;
-          await self.tweets.create(tweet);
-        }
-      });
-
+          if (exists) {
+            count.repeat += 1;
+          } else {
+            count.new += 1;
+            await self.tweets.create(tweet);
+          }
+        });
+      } else {
+        self.logger.warn('[Twitter] No tweets found', tweets);
+      }
       count.query = query;
 
       self.logger.info('[Twitter]', count);

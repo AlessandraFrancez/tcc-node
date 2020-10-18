@@ -12,15 +12,20 @@ const TweetsSchema = new Schema(
     originalText: { type: String },
     status: { type: String, required: true },
     query: { type: String, required: true },
-    entities: { type: Object },
     language: { type: String },
     user_id: { type: String },
+    entities: { type: Array },
     followers_count: { type: Number },
     friends_count: { type: Number },
     place: { type: String },
     verified: { type: Boolean },
     retweet_count: { type: Number },
-    favorite_count: { type: Number }
+    favorite_count: { type: Number },
+    watsonEntities: { type: Array },
+    intents: { type: Array },
+    tones: { type: Array },
+    watsonTranslation: { type: String },
+    googleTranslation: { type: String }
   },
   {
     timestamps: true

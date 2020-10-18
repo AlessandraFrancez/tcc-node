@@ -50,8 +50,8 @@ class SanitizationController {
       console.log('Antes: ', tweet.text);
       tweet.originalText = tweet.text;
       tweet.text = this._removeEmoji(tweet.text);
-      tweet.text = tweet.text.replace('_', ' ').replace(':', ' ');
-      tweet.text = tweet.text.replace('\n', ' ').replace('\t', ' ');
+      tweet.text = tweet.text.replace(/_/g, ' ').replace(/:/g, ' ');
+      tweet.text = tweet.text.replace(/(\r\n|\n|\r|\t)/gm, ' ');
       tweet.text = await this._handleRepeatedChar(tweet.text);
       tweet.text = await this._handleAbbreviations(tweet.text);
       console.log('Depois', tweet.text);
