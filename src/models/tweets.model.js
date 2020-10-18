@@ -9,11 +9,12 @@ const TweetsSchema = new Schema(
     id: { type: String, required: true, unique: true },
     createdAt: { type: Date, expires: 60 * 60 * 24 * 30, default: Date.now }, // TTL
     text: { type: String, required: true },
+    originalText: { type: String },
     status: { type: String, required: true },
     query: { type: String, required: true },
     entities: { type: Object },
     language: { type: String },
-    user_id: { type: Number },
+    user_id: { type: String },
     followers_count: { type: Number },
     friends_count: { type: Number },
     place: { type: String },

@@ -1,11 +1,13 @@
 TODO
 
 - APIs para consulta do front
-- Chamar integrações
-- Oauth1 pro Twitter - ver se tem wrapper
-- Outro config model para os cronjobs das extrações
 - Integração com google
 - Trocar jwt secret
+- Tirar links http(s)
+- Configurar sinônimos das entidades com o nome dos usuários (ex: @vivobr)
+- Chamar integrações OK
+- Oauth1 pro Twitter - ver se tem wrapper OK
+- Outro config model para os cronjobs das extrações OK
 
 
 Melhorias

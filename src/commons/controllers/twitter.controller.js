@@ -52,20 +52,23 @@ class TwitterController {
       repeat: 0
     };
 
+    const self = this;
+
     client.get('search/tweets', {
       q: query,
       result_type: 'mixed',
-      count: 100,
+      count: 2,
       lang: 'pt',
       tweet_mode: 'extended'
     }, function (error, tweets, response) {
-      this.logger.info(typeof tweets);
-      tweets.forEach(async item => {
+      self.logger.info(typeof tweets);
+      console.log(tweets);
+      tweets.statuses.forEach(async item => {
         const tweet = {};
 
         tweet['status'] = 'raw';
         tweet['query'] = query;
-        tweet['_id'] = item['id_str'];
+        tweet['id'] = item['id_str'];
         tweet['created_at'] = item['created_at'];
         tweet['text'] = item['full_text'];
         tweet['entities'] = item['entities'];
@@ -78,22 +81,22 @@ class TwitterController {
         tweet['retweet_count'] = item['retweet_count'];
         tweet['favorite_count'] = item['favorite_count'];
 
-        const exists = await this.tweet.countDocuments({ _id: tweet._id });
+        const exists = await self.tweets.countDocuments({ id: tweet._id });
 
         if (exists) {
           count.repeat += 1;
         } else {
           count.new += 1;
-          await this.tweet.create(tweet);
+          await self.tweets.create(tweet);
         }
       });
 
       count.query = query;
 
-      this.logger.info('[Twitter]', count);
+      self.logger.info('[Twitter]', count);
 
       if (error) {
-        this.logger.error(error);
+        self.logger.error(error);
       }
     });
   }

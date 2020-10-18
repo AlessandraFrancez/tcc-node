@@ -69,7 +69,7 @@ class IBMController {
       url: `${this.baseUrl}/v2/assistants/${this.assistant_id}/sessions?version=${this.version}`
     });
 
-    this.logger.info(res.data);
+    this.logger.info('Response da createSession', res.data);
 
     if (res && res.data && res.data.sessionId) {
       return res.data.sessionId;
@@ -82,30 +82,35 @@ class IBMController {
   async sendMessage(text) {
     const sessionId = await this.createSession();
 
-    const res = await this.axios({
-      method: 'post',
-      headers: { 'content-type': 'application/json' },
-      url: `${this.baseUrl}/v2/assistants/${this.assistant_id}/sessions/${sessionId}/?version=${this.version}`,
-      data: {
-        input: {
-          text,
-          options: {
-            alternate_intents: true,
-            return_context: false
+    if (sessionId) {
+      this.logger.info(`Created session: ${sessionId}`);
+
+      const res = await this.axios({
+        method: 'post',
+        headers: { 'content-type': 'application/json' },
+        url: `${this.baseUrl}/v2/assistants/${this.assistant_id}/sessions/${sessionId}/?version=${this.version}`,
+        data: {
+          input: {
+            text,
+            options: {
+              alternate_intents: true,
+              return_context: false
+            }
           }
         }
-      }
-    });
+      });
 
-    return res.data;
+      console.log(res.data);
+      return res.data;
+    }
   }
 
   async runAssistant(status) {
     const tweets = await this.tweets.find({ status });
     tweets.forEach(async tweet => {
-      await this.sendMessage(tweet.text);
-      tweet.status = 'assistant';
-      await tweet.save();
+      const res = await this.sendMessage(tweet.text);
+      // tweet.status = 'assistant';
+      // await tweet.save();
     });
   }
 
@@ -113,8 +118,8 @@ class IBMController {
     const tweets = await this.tweets.find({ status });
     tweets.forEach(async tweet => {
       await this.translate(tweet.text);
-      tweet.status = 'translated';
-      await tweet.save();
+      // tweet.status = 'translated';
+      // await tweet.save();
     });
   }
 
@@ -122,8 +127,8 @@ class IBMController {
     const tweets = await this.tweets.find({ status });
     tweets.forEach(async tweet => {
       await this.analyzeTone(tweet.text);
-      tweet.status = 'tone';
-      await tweet.save();
+      // tweet.status = 'tone';
+      // await tweet.save();
     });
   }
 

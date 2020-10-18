@@ -29,6 +29,8 @@ class SanitizationController {
     };
     // eslint-disable-next-line no-useless-escape
     text.replace('\w*(\w)\\1{2,}\w*', handleRepeated);
+
+    return text;
   }
 
   async _handleAbbreviations(text) {
@@ -36,18 +38,25 @@ class SanitizationController {
     for (let i = 0; i < dict.length; i++) {
       text.replace(dict[i].word, dict[i].replacement);
     }
+    return text;
   }
 
-  handleText(status) {
-    const tweets = this.tweets.find({ status });
+  async handleText(status) {
+    const tweets = await this.tweets.find({ status });
+    console.log('typeof', typeof tweets);
 
-    this.logger.info(`[Data Analysis] ${tweets.length} being processed from 'raw' state.`);
+    this.logger.info(`[Data Analysis] ${tweets.length} tweets being processed from 'raw' state.`);
     tweets.forEach(async tweet => {
+      console.log('Antes: ', tweet.text);
+      tweet.originalText = tweet.text;
       tweet.text = this._removeEmoji(tweet.text);
       tweet.text = tweet.text.replace('_', ' ').replace(':', ' ');
-      tweet.text = tweet.text.replace(/[^\w\s]/gi, '');
+      tweet.text = tweet.text.replace('\n', ' ').replace('\t', ' ');
       tweet.text = await this._handleRepeatedChar(tweet.text);
       tweet.text = await this._handleAbbreviations(tweet.text);
+      console.log('Depois', tweet.text);
+      tweet.status = 'sanitized';
+      tweet.save();
     });
   }
 }
