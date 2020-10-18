@@ -5,14 +5,12 @@ const Promise = require('bluebird');
 mongoose.Promise = Promise;
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
-const BaseController = require('../controllers/base.controller');
 
 /**
 * Responsible for database connection
 */
-class ConnectionController extends BaseController {
+class ConnectionController {
   constructor() {
-    super();
     this.dbHost = process.env.DB_HOST;
     this.dbPort = process.env.DB_PORT;
     this.dbUser = process.env.DB_USER;
@@ -23,6 +21,7 @@ class ConnectionController extends BaseController {
     this.dbReplicaSet = process.env.DB_REPLICASET === 'true';
     this.dbReplicaSetName = process.env.DB_REPLICASET_NAME;
     this.dbReplicaSetHost = process.env.DB_REPLICASET_HOST;
+    this.logger = require('../logger/logger');
   }
 
   /**
@@ -72,7 +71,8 @@ class ConnectionController extends BaseController {
       mongoose.connection.on('error',
         err => {
           err.type = 'mongodb';
-          logger.error('MongoDB event error: ', err)});
+          logger.error('MongoDB event error: ', err);
+        });
     });
   }
 

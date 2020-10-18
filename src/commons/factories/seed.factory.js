@@ -10,7 +10,8 @@ class SeedFactory {
   }
 
   async initialize() {
-    const timers = this.timers.findOne({});
+    const timers = await this.timers.findOne({});
+    console.log('tentando popular banco', timers.POPULATE_DB);
     if (timers.POPULATE_DB) {
       const configSeed = JSON.parse(this.fs.readFileSync('../../seeds/config_seed.json'));
       await this.config.insertMany(configSeed);

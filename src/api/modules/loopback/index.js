@@ -2,12 +2,8 @@
 
 const pkg = require('../../../../package.json');
 const logger = require('../../../commons/logger/logger');
-const amqp = require('../../../commons/factorys/amqp.factory');
 const BaseRouter = require('../../../commons/router/base.router');
-const redis = require('../../../commons/factorys/socket.factory');
 const connectionController = require('../../../commons/db/connection.controller');
-const axios = require('axios');
-const https = require('https');
 
 class LoopbackRouter extends BaseRouter {
   initialize() {
@@ -16,7 +12,7 @@ class LoopbackRouter extends BaseRouter {
       logger.info('Healthcheck requested...');
       const data = await this.healthCheck();
       logger.info('Healthcheck data:', data);
-      if (req.query && req.query.formatted){
+      if (req.query && req.query.formatted) {
         // res.writeHead(200,{"Content-Type" : "text/html"});
         // res.write(`<h1>WIP</h1>`);
         // res.end();
@@ -38,10 +34,7 @@ class LoopbackRouter extends BaseRouter {
 
   async healthCheck() {
     return {
-      mongo: await connectionController.hasConnection(),
-      rabbit: await amqp.testEnv(),
-      redis: await redis.testEnv(),
-      apache: await this.testApache()
+      mongo: connectionController.hasConnection()
     };
   }
 }

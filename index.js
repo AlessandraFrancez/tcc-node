@@ -22,10 +22,8 @@ class App {
     this.cors = require('cors');
     this.middlewares();
     this.routes();
-    // this.scheduler();
+    this.scheduler();
     this.initialize();
-    this.seedFactory.initialize();
-    this.mailer = require('./src/mailer/mailer');
   }
 
   middlewares() {
@@ -79,22 +77,19 @@ class App {
     this.express.use('*', this.errorHandler);
   }
 
-  // scheduler() {
-  //   if (process.env.NODE_ENV !== 'testing'){
-  //     const Scheduler = require('./src/commons/scheduler/scheduler.controller');
-  //     Scheduler.initialize();
-  //   }
-  // }
+  scheduler() {
+    const Scheduler = require('./src/commons/scheduler/scheduler.controller');
+    Scheduler.initialize();
+  }
 
   async initialize() {
     try {
-      process.env.NODE_ENV = 'development';
       this.logger.info('Starting API server');
       await this.connectionController.connect();
       this.server.listen(this.httpPort);
       this.logger.info('APP has started | port:', this.httpPort);
+      this.seedFactory.initialize();
     } catch (err) {
-      err.type = 'code';
       this.logger.error('[API] Error starting application', err);
     }
   }

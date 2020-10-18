@@ -1,14 +1,13 @@
 'use strict';
 
-const BaseLog = require('../base_worker/base.log');
 const _ = require('lodash');
 
-class Scheduler extends BaseLog {
+class Scheduler {
   constructor() {
-    super();
     this.moment = require('moment');
     this.cron = require('node-cron');
     this.ConfigurationFactory = require('../factories/configuration.factory');
+    this.logger = require('../logger/logger');
     // this.Mailer = require('../../mailer/mailer');
   }
   // WIP
@@ -16,7 +15,7 @@ class Scheduler extends BaseLog {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
     this.runTweetsJob(false, false);
-    this.runDataAnalysis(false, false);
+    this.runAnalysisJob(false, false);
   }
 
   async scheduleJob(cronParam, job) {
@@ -110,7 +109,7 @@ class Scheduler extends BaseLog {
       UpdateConfigurationJob();
       if (scheduleOn) {
         const { CHECK_CONFIG_FREQUENCY } = global.CONFIGURATION;
-        this.checkConfigJob = this.planJobs(CHECK_CONFIG_FREQUENCY, UpdateConfigurationJob, 'minutes');
+        await this.scheduleJob(CHECK_CONFIG_FREQUENCY, UpdateConfigurationJob);
       }
     }
   }
