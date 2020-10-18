@@ -1,5 +1,7 @@
 'use strict';
 
+const path = require('path');
+
 class SeedFactory {
   constructor() {
     this.fs = require('fs');
@@ -11,13 +13,14 @@ class SeedFactory {
 
   async initialize() {
     const timers = await this.timers.findOne({});
-    console.log('tentando popular banco', timers.POPULATE_DB);
     if (timers.POPULATE_DB) {
-      const configSeed = JSON.parse(this.fs.readFileSync('../../seeds/config_seed.json'));
-      await this.config.insertMany(configSeed);
+      let dictSeed = this.fs.readFileSync(path.resolve(__dirname, '../../seeds/dict_seed.json'));
+      dictSeed = JSON.parse(dictSeed);
+      await this.dictionary.insertMany(dictSeed.data);
 
-      const dictSeed = JSON.parse(this.fs.readFileSync('../../seeds/dict_seed.json'));
-      await this.dictionary.insertMany(dictSeed);
+      let configSeed = this.fs.readFileSync(path.resolve(__dirname, '../../seeds/config_seed.json'));
+      configSeed = JSON.parse(configSeed);
+      await this.config.insertMany(configSeed.data);
 
       timers.POPULATE_DB = false;
       await timers.save();
