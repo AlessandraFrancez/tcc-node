@@ -36,8 +36,6 @@ class IBMController {
         }
       });
 
-      this.logger.info('Translate: ', res.data);
-
       if (res.data && res.data.translations && res.data.translations.length > 0) {
         return res.data.translations[0].translation;
       } else {
@@ -68,7 +66,6 @@ class IBMController {
         }
       });
 
-      this.logger.info(res.data);
       if (res.data.document_tone && res.data.document_tone.tones) {
         return res.data.document_tone.tones;
       } else {
@@ -137,7 +134,7 @@ class IBMController {
     for (let i = 0; i < tweets.length; i++) {
       const tweet = tweets[i];
       tweet.watsonTranslation = await this.translate(tweet.text);
-      tweet.googleTranslation = await this.googleController.googleTranslate(tweet.text);
+      // tweet.googleTranslation = await this.googleController.googleTranslate(tweet.text);
       tweet.status = 'translated';
       await tweet.save();
     }
@@ -149,7 +146,7 @@ class IBMController {
     this.logger.info(`[Data Analysis] Analyzing ${tweets.length} tweets in status ${status}`);
     for (let i = 0; i < tweets.length; i++) {
       const tweet = tweets[i];
-      tweet.tones = await this.analyzeTone(tweet.googleTranslation);
+      tweet.tones = await this.analyzeTone(tweet.watsonTranslation);
       tweet.status = 'tone';
       await tweet.save();
     }

@@ -5,6 +5,7 @@ const asyncMiddleware = require('../middleware/async.middleware');
 class BaseRouter {
   constructor() {
     this.router = require('express').Router({ mergeParams: true });
+    this.logger = require('../logger/logger');
   }
 
   post(path, fn, ...middlewares) {

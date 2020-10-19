@@ -43,18 +43,17 @@ class SanitizationController {
 
   async handleText(status) {
     const tweets = await this.tweets.find({ status });
-    console.log('typeof', typeof tweets);
 
-    this.logger.info(`[Data Analysis] ${tweets.length} tweets being processed from 'raw' state.`);
+    this.logger.info(`[Data Analysis] Analyzing ${tweets.length} tweets in status ${status}`);
     tweets.forEach(async tweet => {
-      console.log('Antes: ', tweet.text);
+      // console.log('Antes: ', tweet.text);
       tweet.originalText = tweet.text;
       tweet.text = this._removeEmoji(tweet.text);
       tweet.text = tweet.text.replace(/_/g, ' ').replace(/:/g, ' ');
       tweet.text = tweet.text.replace(/(\r\n|\n|\r|\t)/gm, ' ');
       tweet.text = await this._handleRepeatedChar(tweet.text);
       tweet.text = await this._handleAbbreviations(tweet.text);
-      console.log('Depois', tweet.text);
+      // console.log('Depois', tweet.text);
       tweet.status = 'sanitized';
       tweet.save();
     });

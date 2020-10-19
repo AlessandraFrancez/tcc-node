@@ -1,5 +1,7 @@
 'use strict';
 
+const { Translate, TranslateOptions } = require('@google-cloud/translate').v2;
+
 class GoogleController {
   constructor() {
     this.axios = require('axios');
@@ -10,22 +12,15 @@ class GoogleController {
   /** @description Calls Google Translate and returns string of translated text */
   async googleTranslate(text) {
     try {
-      const res = await this.axios({
-        method: 'post',
-        url: 'https://translation.googleapis.com/language/translate/v2',
-        headers: { 'content-type': 'application/json' },
-        data: {
-          q: text,
-          source: 'pt',
-          target: 'en',
-          format: 'text'
-        }
-      });
+      let translate = new Translate();
+      translate = TranslateOptions.getDefaultInstance().getService();
 
-      this.logger.info('Google Translation: ', res.data);
+      let [translations] = await translate.translate(text, 'en');
 
-      if (res.data.data && res.data.data.translations && res.data.data.translations.length > 0) {
-        return res.data.data.translations[0].translatedText;
+      this.logger.info('Google Translation: ', translations);
+
+      if (translations) {
+        return translations;
       } else {
         return '';
       }

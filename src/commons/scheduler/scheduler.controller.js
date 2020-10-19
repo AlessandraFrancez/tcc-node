@@ -15,7 +15,7 @@ class Scheduler {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
     this.runTweetsJob(false, false);
-    this.runAnalysisJob(true, false);
+    this.runAnalysisJob(false, false);
   }
 
   async scheduleJob(cronParam, job) {

@@ -30,7 +30,7 @@ class App {
     const corsOptionsDelegate = function (req, callback) {
       let whitelist = [process.env.DOMAIN_INTERNET,
         'http://localhost:3000',
-        'http://localhost:8081',
+        'http://localhost:8082',
         undefined];
       let corsOptions = {
         credentials: true,

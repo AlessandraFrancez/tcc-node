@@ -4,6 +4,17 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const VotingSchema = new Schema(
+  {
+    _id: false,
+    fetched: { type: Number, required: true, default: 0, index: true },
+    entities: { type: Array },
+    intents: { type: Array },
+    translationLevel: { type: Number },
+    alternativeTranslation: { type: String }
+  }
+);
+
 const TweetsSchema = new Schema(
   {
     id: { type: String, required: true, unique: true },
@@ -25,7 +36,8 @@ const TweetsSchema = new Schema(
     intents: { type: Array },
     tones: { type: Array },
     watsonTranslation: { type: String },
-    googleTranslation: { type: String }
+    googleTranslation: { type: String },
+    voting: VotingSchema
   },
   {
     timestamps: true
