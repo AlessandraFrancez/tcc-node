@@ -11,7 +11,10 @@ const VotingSchema = new Schema(
     entities: { type: Array },
     intents: { type: Array },
     translationLevel: { type: Number },
-    alternativeTranslation: { type: String }
+    alternativeTranslation: { type: String },
+    theme: { type: Array },
+    translation: { type: Array },
+    company: { type: Array }
   }
 );
 
