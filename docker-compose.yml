@@ -1,0 +1,31 @@
+version: "3"
+services:
+  tcc-node:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - DB_HOST=mongo
+      - DB_PORT=27017
+    depends_on:
+      - mongo
+    networks:
+      - main
+  mongo:
+    image: mongo
+    networks:
+      - main
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=tcc
+      - MONGO_INITDB_ROOT_PASSWORD=carPigBattery2020
+    volumes:
+      - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+    command: mongod
+networks:
+  main:
+volumes:
+  mongo-entrypoint:
+
+
