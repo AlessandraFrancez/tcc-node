@@ -9,11 +9,11 @@ class VotingController {
   }
 
   async getQuestions(req, res, next) {
-    this.logger.info('GET /questions received');
+    this.logger.info('GET /getQuestions received');
+    const { ids } = req.body;
 
-    const list = await this.tweets.find({ status: 'tone' }).sort({ 'voting.fetched': 0 }).limit(10).lean();
-    console.log(list);
-    const filteredList = [];
+    const list = await this.tweets.find({ status: 'tone' }).sort({ 'voting.fetched': 0 }).limit(5).lean();
+    let filteredList = [];
     list.map(item => {
       filteredList.push({
         text: item.text,
@@ -22,14 +22,25 @@ class VotingController {
       });
     });
 
+    if (ids) {
+      filteredList = filteredList.filter(item => ids.indexOf(item.id) === -1);
+    }
+
     res.json(filteredList);
   }
 
   async saveQuestion(req, res, next) {
-    this.logger.info('POST /questions received');
+    this.logger.info('POST /saveQuestion received');
     res.json(200);
 
     const { data, id } = req.body;
+    const list = ['theme', 'telecom', 'consumer', 'alternativeTheme', 'translation', 'company'];
+
+    Object.keys(data).forEach(name => {
+      if (list.indexOf(name) === -1) {
+        res.json(new Error('INVALID_PARAMS'));
+      }
+    });
 
     console.log(data);
 
@@ -44,7 +55,6 @@ class VotingController {
         } else {
           tweet.voting[item] = [data[item]];
         }
-
       }
     });
 

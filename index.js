@@ -15,7 +15,6 @@ class App {
     this.mongoose = require('mongoose');
     this.logger = require('./src/commons/logger/logger');
     this.errorHandler = require('./src/commons/handler/error.handler');
-    this.socketServer = require('./src/commons/factories/socket.factory');
     this.jwtMiddleware = require('./src/commons/middleware/jwt.middleware');
     this.connectionController = require('./src/commons/db/connection.controller');
     this.seedFactory = require('./src/commons/factories/seed.factory');
@@ -67,8 +66,7 @@ class App {
     this.express.use(this.jwtMiddleware.initialize());
     this.express.use(this.helmet({ frameguard: { action: 'deny' }, hsts: { maxAge: 5184000 } }));
 
-    this.server = this.socketServer.initialize(this.express);
-    this.server.setTimeout(this.reqTimeout);
+    this.server = this.express;
   }
 
   routes() {

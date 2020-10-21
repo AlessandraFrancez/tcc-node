@@ -13,6 +13,7 @@ services:
       - main
   mongo:
     image: mongo
+    restart: unless-stopped
     networks:
       - main
     ports:
@@ -25,6 +26,7 @@ services:
     command: mongod
 networks:
   main:
+    driver: bridge
 volumes:
   mongo-entrypoint:
 

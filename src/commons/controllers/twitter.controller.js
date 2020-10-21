@@ -57,7 +57,7 @@ class TwitterController {
     client.get('search/tweets', {
       q: query,
       result_type: 'mixed',
-      count: 2,
+      count: 100,
       lang: 'pt',
       tweet_mode: 'extended'
     }, function (error, tweets, response) {

@@ -5,8 +5,8 @@ const VotingController = require('./controllers/voting.controller');
 
 class VotingRouter extends BaseRouter {
   initialize() {
-    this.get('/questions', VotingController.getQuestions);
-    this.post('/questions', VotingController.saveQuestion);
+    this.post('/getQuestions', VotingController.getQuestions);
+    this.post('/saveQuestion', VotingController.saveQuestion);
   }
 }
 
