@@ -31,7 +31,6 @@ const TweetsSchema = new Schema(
     entities: { type: Array },
     followers_count: { type: Number },
     friends_count: { type: Number },
-    place: { type: String },
     verified: { type: Boolean },
     retweet_count: { type: Number },
     favorite_count: { type: Number },
@@ -40,7 +39,7 @@ const TweetsSchema = new Schema(
     tones: { type: Array },
     watsonTranslation: { type: String },
     googleTranslation: { type: String },
-    voting: VotingSchema
+    voting: { type: VotingSchema, required: true, default: { fetched: 0 } }
   },
   {
     timestamps: true

@@ -8,7 +8,6 @@ class Scheduler {
     this.cron = require('node-cron');
     this.ConfigurationFactory = require('../factories/configuration.factory');
     this.logger = require('../logger/logger');
-    // this.Mailer = require('../../mailer/mailer');
   }
   // WIP
   async initialize() {
@@ -47,7 +46,7 @@ class Scheduler {
 
       if (scheduled) {
         const { TWEET_EXTRACTION_FREQUENCY } = global.CONFIGURATION;
-        await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, TwitterJob);
+        this.runTweets = await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, TwitterJob);
       } else {
         TwitterJob();
       }
@@ -65,7 +64,7 @@ class Scheduler {
 
       if (scheduled) {
         const { TWEET_EXTRACTION_FREQUENCY } = global.CONFIGURATION;
-        await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, DataJob);
+        this.runAnalysis = await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, DataJob);
       } else {
         DataJob();
       }
@@ -84,19 +83,19 @@ class Scheduler {
           switch (job) {
             case 'TWEET_EXTRACTION_FREQUENCY':
               if (currentConfig.TWEET_EXTRACTION_FREQUENCY !== newConfig.TWEET_EXTRACTION_FREQUENCY) {
-                this.exactDateJob.destroy();
+                this.runTweets.destroy();
                 this.runTweetsJob();
               }
               break;
             case 'CHECK_CONFIG_FREQUENCY':
               if (currentConfig.CHECK_CONFIG_FREQUENCY !== newConfig.CHECK_CONFIG_FREQUENCY) {
-                this.checkConfigJob.destroy();
+                this.checkConfig.destroy();
                 this.updateConfiguration();
               }
               break;
             case 'DATA_ANALYSIS_FREQUENCY':
               if (currentConfig.DATA_ANALYSIS_FREQUENCY !== newConfig.DATA_ANALYSIS_FREQUENCY) {
-                this.runTestsJob.destroy();
+                this.runAnalysis.destroy();
                 this.runAnalysisJob();
               }
               break;
@@ -109,7 +108,7 @@ class Scheduler {
       UpdateConfigurationJob();
       if (scheduleOn) {
         const { CHECK_CONFIG_FREQUENCY } = global.CONFIGURATION;
-        await this.scheduleJob(CHECK_CONFIG_FREQUENCY, UpdateConfigurationJob);
+        this.checkConfig = await this.scheduleJob(CHECK_CONFIG_FREQUENCY, UpdateConfigurationJob);
       }
     }
   }

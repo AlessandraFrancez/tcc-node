@@ -60,12 +60,12 @@ class TwitterController {
       count: 100,
       lang: 'pt',
       tweet_mode: 'extended'
-    }, function (error, tweets, response) {
-      self.logger.info(typeof tweets);
+    }, async function (error, tweets, response) {
       if (tweets && tweets.statuses) {
-        tweets.statuses.forEach(async item => {
-          const tweet = {};
+        for (let i = 0; i < tweets.statuses.length; i++) {
+          const item = tweets.statuses[i];
 
+          const tweet = {};
           tweet['status'] = 'raw';
           tweet['query'] = query;
           tweet['id'] = item['id_str'];
@@ -89,7 +89,7 @@ class TwitterController {
             count.new += 1;
             await self.tweets.create(tweet);
           }
-        });
+        }
       } else {
         self.logger.warn('[Twitter] No tweets found', tweets);
       }

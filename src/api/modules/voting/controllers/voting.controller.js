@@ -34,7 +34,7 @@ class VotingController {
     res.json(200);
 
     const { data, id } = req.body;
-    const list = ['theme', 'telecom', 'consumer', 'alternativeTheme', 'translation', 'company'];
+    const list = ['theme', 'telecom', 'consumer', 'alternativeTheme', 'translation', 'company', 'alternativeCompany'];
 
     Object.keys(data).forEach(name => {
       if (list.indexOf(name) === -1) {
@@ -47,6 +47,10 @@ class VotingController {
     if (!id || !data) throw new Error('INVALID_PARAMS');
 
     const tweet = await this.tweets.findOne({ id });
+
+    if (!tweet.voting) {
+      tweet.voting = {};
+    }
 
     Object.keys(data).forEach(item => {
       if (data[item]) {

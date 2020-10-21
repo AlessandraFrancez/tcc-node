@@ -81,7 +81,6 @@ class IBMController {
   /** @description Sends message to Watson Assistant */
   async sendMessage(text) {
     try {
-      this.logger.info(`Text****************** ${text}`);
       const res = await this.axios({
         method: 'post',
         headers: { 'content-type': 'application/json' },
