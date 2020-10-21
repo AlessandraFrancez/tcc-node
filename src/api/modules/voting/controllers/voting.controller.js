@@ -16,7 +16,7 @@ class VotingController {
     let filteredList = [];
     list.map(item => {
       filteredList.push({
-        text: item.text,
+        text: item.originalText,
         watsonTranslation: item.watsonTranslation,
         id: item.id
       });

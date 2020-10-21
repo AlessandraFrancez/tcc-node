@@ -11,12 +11,15 @@ const VotingSchema = new Schema(
     entities: { type: Array },
     intents: { type: Array },
     translationLevel: { type: Number },
-    alternativeTranslation: { type: String },
+    alternativeTranslation: { type: Array },
     theme: { type: Array },
     translation: { type: Array },
     company: { type: Array },
     telecom: { type: Array },
-    consumer: { type: Array }
+    consumer: { type: Array },
+    alternativeCompany: { type: Array },
+    alternativeTheme: { type: Array }
+
   }
 );
 
