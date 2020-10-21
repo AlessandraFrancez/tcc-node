@@ -14,7 +14,9 @@ const VotingSchema = new Schema(
     alternativeTranslation: { type: String },
     theme: { type: Array },
     translation: { type: Array },
-    company: { type: Array }
+    company: { type: Array },
+    telecom: { type: Array },
+    consumer: { type: Array }
   }
 );
 
