@@ -30,7 +30,7 @@ class App {
       let whitelist = [process.env.DOMAIN_INTERNET,
         'http://localhost:3000',
         'http://localhost:8082',
-        'http://tcc-node.s3-website.us-east-2.amazonaws.com'
+        'http://tcc-node.s3-website.us-east-2.amazonaws.com',
         undefined];
       let corsOptions = {
         credentials: true,
