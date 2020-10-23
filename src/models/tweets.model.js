@@ -18,7 +18,8 @@ const VotingSchema = new Schema(
     telecom: { type: Array },
     consumer: { type: Array },
     alternativeCompany: { type: Array },
-    alternativeTheme: { type: Array }
+    alternativeTheme: { type: Array },
+    selected: { type: Array }
 
   }
 );

@@ -34,7 +34,7 @@ class VotingController {
     res.json(200);
 
     const { data, id } = req.body;
-    const list = ['theme', 'telecom', 'consumer', 'alternativeTheme', 'translation', 'company', 'alternativeCompany'];
+    const list = ['theme', 'telecom', 'consumer', 'alternativeTheme', 'translation', 'company', 'alternativeCompany', 'selected', 'clicked'];
 
     Object.keys(data).forEach(name => {
       if (list.indexOf(name) === -1) {

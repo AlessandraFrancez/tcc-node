@@ -14,7 +14,8 @@ class Scheduler {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
     this.runTweetsJob(true, true);
-    this.runAnalysisJob(true, true);
+    this.runAnalysisJob(false, false);
+    this.dataReviewJob(false, false);
   }
 
   async scheduleJob(cronParam, job) {
@@ -49,6 +50,23 @@ class Scheduler {
         this.runTweets = await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, TwitterJob);
       } else {
         TwitterJob();
+      }
+    }
+  }
+
+  async dataReviewJob(enabled = true, scheduled = true) {
+    if (enabled && process.env.NODE_ENV !== 'development') {
+      const dataReviewController = require('../controllers/dataReview.controller');
+      const DataReviewJob = async () => {
+        this.logger.info('[Scheduler] Starting Data Review Job');
+        await dataReviewController.generateLogs();
+        this.logger.info('[Scheduler] Data Review Job completed');
+      };
+      if (scheduled) {
+        const { DATA_REVIEW_FREQUENCY } = global.CONFIGURATION;
+        this.runDataReview = await this.scheduleJob(DATA_REVIEW_FREQUENCY, DataReviewJob);
+      } else {
+        DataReviewJob();
       }
     }
   }
