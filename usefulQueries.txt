@@ -1,0 +1,8 @@
+
+// Results per status
+db.getCollection('tweets').aggregate(
+    [
+        {$group: {_id: '$status', count: { $sum: 1 } } }
+    ]
+)
+
