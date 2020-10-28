@@ -13,9 +13,9 @@ class Scheduler {
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    this.runTweetsJob(true, true);
+    this.runTweetsJob(false, true);
     this.runAnalysisJob(false, false);
-    this.dataReviewJob(false, false);
+    this.dataReviewJob(true, false);
   }
 
   async scheduleJob(cronParam, job) {
@@ -24,12 +24,6 @@ class Scheduler {
       timezone: 'America/Sao_Paulo'
     });
     return task;
-  }
-
-  async planJobs(frequency, job, frequencyType = 'hours') {
-    const cronParam = this.PropertyUtils.getCronHour(frequency, frequencyType);
-    this.logger.verbose(`[PlanJob] Job: ${job.name} set to ${cronParam}`);
-    return this.scheduleJob(cronParam, job);
   }
 
   async cancelJobs(JobName) {

@@ -1,10 +1,10 @@
 'use strict';
 
 const { lstatSync, readdirSync } = require('fs');
-const {join} = require('path');
+const { join } = require('path');
 
 class Router {
-  constructor(){
+  constructor() {
     this.cors = require('cors');
     this.limiter = require('../commons/middleware/rateLimiter.middleware')
   }
@@ -16,7 +16,7 @@ class Router {
 
       app.use(`/api/${route}`, require(`./modules/${route}`));
       app.get('/', (req, res, next) => {
-        return res.status(200).json({status: 200, message: 'online', healthcheck: '/api/loopback/test'})
+        return res.status(200).json({ status: 200, message: 'online', healthcheck: '/api/healtcheck/test' })
       });
     });
   }

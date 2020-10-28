@@ -9,7 +9,7 @@ class VotingController {
   }
 
   async getQuestions(req, res, next) {
-    this.logger.info('GET /getQuestions received');
+    this.logger.info('POST /getQuestions received');
     const { ids } = req.body;
 
     const list = await this.tweets.find({ status: 'tone' }).sort({ 'voting.fetched': 0 }).limit(5).lean();

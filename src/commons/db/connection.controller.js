@@ -24,21 +24,6 @@ class ConnectionController {
     this.logger = require('../logger/logger');
   }
 
-  /**
-  * Returns assembled connection url
-  */
-  _getConnectionUrl() {
-    let connUrl = 'mongodb://';
-    if (this.dbAuth) connUrl = `${connUrl}${this.dbUser}:${this.dbPass}@`;
-    if (this.dbReplicaSet) {
-      connUrl = `${connUrl}${this.dbReplicaSetHost}/${this.dbName}?replicaSet=${this.dbReplicaSetName}`;
-      connUrl = `${connUrl}&authSource=${this.dbAuthSrc}&retryWrites=true`;
-    } else {
-      connUrl = `${connUrl}${this.dbHost}:${this.dbPort}/${this.dbName}?authSource=${this.dbAuthSrc}`;
-    }
-    return connUrl;
-  }
-
   getDatabase(name) {
     return this.connection.useDb(name);
   }
@@ -90,7 +75,7 @@ class ConnectionController {
   */
   async connect() {
     try {
-      const connectionUrl = this._getConnectionUrl();
+      const connectionUrl = process.env.MONGODB_CONNECTION_STRING;
       let logSafeUrl = '';
 
       if (this.dbAuth) {
