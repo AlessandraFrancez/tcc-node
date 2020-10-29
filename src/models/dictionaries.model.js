@@ -5,8 +5,9 @@ const Schema = mongoose.Schema;
 
 const DictSchema = new Schema({
   word: { type: String, required: true },
-  replacement: { type: String, required: true },
-  type: { type: String, required: true }
+  replacement: { type: String },
+  type: { type: String, required: true },
+  ignore: { type: Boolean, default: false }
 }, {
   timestamps: true
 });

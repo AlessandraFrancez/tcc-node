@@ -19,16 +19,15 @@ class SanitizationController {
         if (knownWord.replacement) {
           return knownWord.replacement;
         } else {
-          this.logger.info('[HandleRepeatedWord] Manual intervention required on repeated word', knownWord);
+          this.logger.info('[HandleRepeatedWord] Manual intervention required on repeated word', knownWord.word);
           return word;
         }
       } else {
-        await this.dictionary.insertOne({ word, type: 'repeated' });
+        await this.dictionary.create({ word, type: 'repeated' });
         return word;
       }
     };
-    // eslint-disable-next-line no-useless-escape
-    text.replace('\w*(\w)\\1{2,}\w*', handleRepeated);
+    text.replace(/\w*(\w)\1{2,}\w+/g, handleRepeated);
 
     return text;
   }
@@ -46,14 +45,13 @@ class SanitizationController {
 
     this.logger.info(`[Data Analysis] Analyzing ${tweets.length} tweets in status ${status}`);
     tweets.forEach(async tweet => {
-      // console.log('Antes: ', tweet.text);
       tweet.originalText = tweet.text;
       tweet.text = this._removeEmoji(tweet.text);
       tweet.text = tweet.text.replace(/_/g, ' ').replace(/:/g, ' ');
+      tweet.text = tweet.text.toLowerCase();
       tweet.text = tweet.text.replace(/(\r\n|\n|\r|\t)/gm, ' ');
       tweet.text = await this._handleRepeatedChar(tweet.text);
       tweet.text = await this._handleAbbreviations(tweet.text);
-      // console.log('Depois', tweet.text);
       tweet.status = 'sanitized';
       tweet.save();
     });

@@ -8,14 +8,16 @@ class Scheduler {
     this.cron = require('node-cron');
     this.ConfigurationFactory = require('../factories/configuration.factory');
     this.logger = require('../logger/logger');
+    this.SchedulerUtils = require('../../commons/utils/scheduler.utils');
   }
-  // WIP
+
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
     this.runTweetsJob(false, true);
-    this.runAnalysisJob(false, false);
+    this.runAnalysisJob(true, false);
     this.dataReviewJob(true, false);
+    this.runGetUntranslatedJob(true, false);
   }
 
   async scheduleJob(cronParam, job) {
@@ -44,6 +46,23 @@ class Scheduler {
         this.runTweets = await this.scheduleJob(TWEET_EXTRACTION_FREQUENCY, TwitterJob);
       } else {
         TwitterJob();
+      }
+    }
+  }
+
+  async runGetUntranslatedJob(enabled = true, scheduled = true) {
+    if (enabled) {
+      const GetUntranslatedJob = async () => {
+        this.logger.info('[Scheduler] Starting Get Untranslated Words Job');
+        await this.SchedulerUtils.getUntranslatedWords();
+        this.logger.info('[Scheduler] Get Untranslated Words Job finished successfully.');
+      };
+
+      if (scheduled) {
+        const { GET_UNTRANSLATED_FREQUENCY } = global.CONFIGURATION;
+        this.runTweets = await this.scheduleJob(GET_UNTRANSLATED_FREQUENCY, GetUntranslatedJob);
+      } else {
+        GetUntranslatedJob();
       }
     }
   }
