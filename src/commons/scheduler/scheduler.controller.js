@@ -14,10 +14,11 @@ class Scheduler {
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    this.runTweetsJob(true, true);
-    this.runAnalysisJob(false, false);
-    this.dataReviewJob(false, false);
-    this.runGetUntranslatedJob(false, false);
+    this.runTweetsJob(false, true);
+    this.runAnalysisJob(true, false);
+    this.dataReviewJob(true, false);
+    this.runGetUntranslatedJob(true, false);
+    this.runStatsJob(true, false);
   }
 
   async scheduleJob(cronParam, job) {
@@ -63,6 +64,23 @@ class Scheduler {
         this.runTweets = await this.scheduleJob(GET_UNTRANSLATED_FREQUENCY, GetUntranslatedJob);
       } else {
         GetUntranslatedJob();
+      }
+    }
+  }
+
+  async runStatsJob(enabled = true, scheduled = true) {
+    if (enabled) {
+      const StatsJob = async () => {
+        this.logger.info('[Scheduler] Starting Update Stats Job');
+        await this.SchedulerUtils.getStats();
+        this.logger.info('[Scheduler] Update Stats Job finished successfully.');
+      };
+
+      if (scheduled) {
+        const { GET_STATS_FREQUENCY } = global.CONFIGURATION;
+        this.runTweets = await this.scheduleJob(GET_STATS_FREQUENCY, StatsJob);
+      } else {
+        StatsJob();
       }
     }
   }

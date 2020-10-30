@@ -5,6 +5,7 @@ class SchedulerUtils {
     this.Tweets = require('../../models/tweets.model');
     this.Dictionary = require('../../models/dictionaries.model');
     this.logger = require('../logger/logger');
+    this.moment = require('moment-timezone');
   }
 
   async getUntranslatedWords() {
@@ -42,6 +43,19 @@ class SchedulerUtils {
     }
 
     this.logger.info(`[GetUntranslatedJob] ${counter} words added out of ${tweets.length} analyzed.`);
+  }
+
+  async getStats() {
+    const stats = {
+      fetched: await this.Tweets.countDocuments({ 'voting.fetched': { $gt: 0 } }),
+      total: await this.Tweets.countDocuments({}),
+      replacedWords: await this.Dictionary.countDocuments({ $or: [{ replacement: { $exists: true } }, { ignore: { $exists: true } }] }),
+      wordsTotal: await this.Dictionary.countDocuments({}),
+      lastUpdate: this.moment.tz('America/Sao_Paulo').format('HH:mm:SS DD/MM/YYYY')
+    }
+    global.STATS = stats;
+
+    this.logger.info('Global stats updated', global.STATS);
   }
 }
 
