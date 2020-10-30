@@ -33,24 +33,36 @@ class SanitizationController {
   }
 
   async _handleAbbreviations(text) {
-    const dict = await this.dictionary.find({ type: 'general' }).lean();
+    const dict = await this.dictionary.find({ replacement: { $exists: true } }).lean();
     for (let i = 0; i < dict.length; i++) {
-      text.replace(dict[i].word, dict[i].replacement);
+      const search = ' ' + dict[i].word + ' ';
+      const replaceWith = ' ' + dict[i].replacement + ' ';
+
+      text = text.split(search).join(replaceWith);
     }
     return text;
   }
 
   handleLaugh(text) {
-    text.replace(/[kK]{3,}/g, 'haha');
+    text = text.replace(/[kK]{3,}/g, 'haha');
+    return text;
+  }
+
+  handleUrls(text) {
+    // eslint-disable-next-line no-useless-escape
+    text = text.replace(/https?:? ?\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi, '');
     return text;
   }
 
   async handleText(status) {
-    const tweets = await this.tweets.find({ status });
+    const tweets = await this.tweets.find({ status }).limit(10);
 
     this.logger.info(`[Data Analysis] Analyzing ${tweets.length} tweets in status ${status}`);
-    tweets.forEach(async tweet => {
-      tweet.originalText = tweet.text;
+
+    for (let i = 0; i < tweets.length; i++) {
+      const tweet = tweets[i];
+      tweet.originalText = (' ' + tweet.text).slice(1);
+      tweet.text = this.handleUrls(tweet.text);
       tweet.text = this._removeEmoji(tweet.text);
       tweet.text = tweet.text.replace(/_/g, ' ').replace(/:/g, ' ');
       tweet.text = tweet.text.toLowerCase();
@@ -60,7 +72,7 @@ class SanitizationController {
       tweet.text = await this._handleAbbreviations(tweet.text);
       tweet.status = 'sanitized';
       tweet.save();
-    });
+    }
   }
 }
 

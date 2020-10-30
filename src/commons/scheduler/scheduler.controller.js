@@ -14,10 +14,10 @@ class Scheduler {
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    this.runTweetsJob(false, true);
-    this.runAnalysisJob(true, false);
-    this.dataReviewJob(true, false);
-    this.runGetUntranslatedJob(true, false);
+    this.runTweetsJob(true, true);
+    this.runAnalysisJob(false, false);
+    this.dataReviewJob(false, false);
+    this.runGetUntranslatedJob(false, false);
   }
 
   async scheduleJob(cronParam, job) {
