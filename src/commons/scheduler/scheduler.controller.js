@@ -14,11 +14,11 @@ class Scheduler {
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    this.runTweetsJob(false, true);
+    this.runTweetsJob(true, true);
     this.runAnalysisJob(true, false);
     this.dataReviewJob(true, false);
     this.runGetUntranslatedJob(true, false);
-    this.runStatsJob(true, false);
+    this.runStatsJob(true, true);
   }
 
   async scheduleJob(cronParam, job) {
@@ -61,7 +61,7 @@ class Scheduler {
 
       if (scheduled) {
         const { GET_UNTRANSLATED_FREQUENCY } = global.CONFIGURATION;
-        this.runTweets = await this.scheduleJob(GET_UNTRANSLATED_FREQUENCY, GetUntranslatedJob);
+        this.runUntranslated = await this.scheduleJob(GET_UNTRANSLATED_FREQUENCY, GetUntranslatedJob);
       } else {
         GetUntranslatedJob();
       }
@@ -78,7 +78,7 @@ class Scheduler {
 
       if (scheduled) {
         const { GET_STATS_FREQUENCY } = global.CONFIGURATION;
-        this.runTweets = await this.scheduleJob(GET_STATS_FREQUENCY, StatsJob);
+        this.runStats = await this.scheduleJob(GET_STATS_FREQUENCY, StatsJob);
       } else {
         StatsJob();
       }
@@ -146,6 +146,24 @@ class Scheduler {
               if (currentConfig.DATA_ANALYSIS_FREQUENCY !== newConfig.DATA_ANALYSIS_FREQUENCY) {
                 this.runAnalysis.destroy();
                 this.runAnalysisJob();
+              }
+              break;
+            case 'DATA_REVIEW_FREQUENCY':
+              if (currentConfig.DATA_REVIEW_FREQUENCY !== newConfig.DATA_REVIEW_FREQUENCY) {
+                this.runDataReview.destroy();
+                this.dataReviewJob();
+              }
+              break;
+            case 'GET_STATS_FREQUENCY':
+              if (currentConfig.GET_STATS_FREQUENCY !== newConfig.GET_STATS_FREQUENCY) {
+                this.runStats.destroy();
+                this.runStatsJob();
+              }
+              break;
+            case 'GET_UNTRANSLATED_FREQUENCY':
+              if (currentConfig.GET_UNTRANSLATED_FREQUENCY !== newConfig.GET_UNTRANSLATED_FREQUENCY) {
+                this.runUntranslated.destroy();
+                this.runGetUntranslatedJob();
               }
               break;
             default:
