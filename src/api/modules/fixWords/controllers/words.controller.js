@@ -9,7 +9,8 @@ class WordsController {
   }
 
   async getWords(req, res, next) {
-    this.logger.info('GET /getWords received');
+    this.logger.info('POST /getWords received');
+    const { ids } = req.body;
 
     const list = await this.Dictionary.find({ 'replacement': { $exists: false }, 'ignore': { $exists: false } }).limit(10).lean();
     let filteredList = [];
@@ -21,7 +22,10 @@ class WordsController {
       });
     });
 
-    console.log(filteredList);
+    if (ids) {
+      filteredList = filteredList.filter(item => ids.indexOf(item.id) === -1);
+    }
+
     res.json(filteredList);
   }
 

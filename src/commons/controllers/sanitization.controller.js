@@ -40,6 +40,11 @@ class SanitizationController {
     return text;
   }
 
+  handleLaugh(text) {
+    text.replace(/[kK]{3,}/g, 'haha');
+    return text;
+  }
+
   async handleText(status) {
     const tweets = await this.tweets.find({ status });
 
@@ -49,6 +54,7 @@ class SanitizationController {
       tweet.text = this._removeEmoji(tweet.text);
       tweet.text = tweet.text.replace(/_/g, ' ').replace(/:/g, ' ');
       tweet.text = tweet.text.toLowerCase();
+      tweet.text = this.handleLaugh(tweet.text);
       tweet.text = tweet.text.replace(/(\r\n|\n|\r|\t)/gm, ' ');
       tweet.text = await this._handleRepeatedChar(tweet.text);
       tweet.text = await this._handleAbbreviations(tweet.text);
