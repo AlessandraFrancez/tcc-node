@@ -52,10 +52,35 @@ class SchedulerUtils {
       replacedWords: await this.Dictionary.countDocuments({ $or: [{ replacement: { $exists: true } }, { ignore: { $exists: true } }] }),
       wordsTotal: await this.Dictionary.countDocuments({}),
       lastUpdate: this.moment.tz('America/Sao_Paulo').format('HH:mm:SS DD/MM/YYYY')
-    }
+    };
     global.STATS = stats;
 
     this.logger.info('Global stats updated', global.STATS);
+  }
+
+  async getTones() {
+    const choices = ['Anger', 'Fear', 'Joy', 'Sadness', 'Analytical', 'Confident', 'Tentative'];
+    choices.forEach(async choice => this.getTone(choice));
+  }
+
+  async getTone(choice) {
+    const res = [];
+    const tones = await this.Tweets.find({ 'voting.fetched': { $gt: 0 }, 'tones.0': { $exists: true } }, { 'tones': 1, '_id': 0 }).lean();
+
+    for (let i = 0; i < tones.length; i++) {
+      const analyzedTweet = tones[i].tones;
+
+      analyzedTweet.forEach(item => {
+        if (item.tone_name === choice) {
+          res.push(item);
+        }
+      });
+    }
+
+    this.logger.info({
+      tone: choice,
+      quantity: res.length
+    });
   }
 }
 

@@ -22,7 +22,7 @@ class TwitterController {
     if (document.exclude && document.exclude.length > 0) {
       document.exclude.forEach(item => {
         // eslint-disable-next-line quotes
-        q += " -\"" + item + "\"";
+        q += ' -"' + item + '"';
       });
     }
     q += ' AND -filter:retweets';

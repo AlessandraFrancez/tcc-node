@@ -118,7 +118,7 @@ class IBMController {
       for (let i = 0; i < tweets.length; i++) {
         const tweet = tweets[i];
         const res = await this.sendMessage(tweet.text);
-        tweet.entites = res.entities;
+        tweet.watsonEntities = res.entities;
         tweet.intents = res.intents;
         tweet.status = 'assistant';
         await tweet.save();
@@ -154,9 +154,9 @@ class IBMController {
   /** @description Runs through all the data analysis steps: Sanitizes data, translates it and fetches sentiment and opinion data for all new tweets */
   async runDataAnalysis() {
     await this.sanitizationController.handleText('raw');
-    await this.runAssistant('sanitized');
-    await this.runTranslate('assistant');
-    await this.runToneAnalyzer('translated');
+    // await this.runAssistant('sanitized');
+    // await this.runTranslate('assistant');
+    // await this.runToneAnalyzer('translated');
   }
 }
 
