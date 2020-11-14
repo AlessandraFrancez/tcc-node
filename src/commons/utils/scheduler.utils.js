@@ -49,7 +49,17 @@ class SchedulerUtils {
     const stats = {
       fetched: await this.Tweets.countDocuments({ 'voting.fetched': { $gt: 0 } }),
       total: await this.Tweets.countDocuments({}),
-      replacedWords: await this.Dictionary.countDocuments({ $or: [{ replacement: { $exists: true } }, { ignore: { $exists: true } }] }),
+      replacedWords: await this.Dictionary.countDocuments({
+        $or: [
+          { replacement: { $exists: true } },
+          {
+            $and:
+              [
+                { ignore: { $exists: true } }, { ignore: true }
+              ]
+          }
+        ]
+      }),
       wordsTotal: await this.Dictionary.countDocuments({}),
       lastUpdate: this.moment.tz('America/Sao_Paulo').format('HH:mm:SS DD/MM/YYYY')
     };

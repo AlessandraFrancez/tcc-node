@@ -4,6 +4,7 @@ class VotingController {
   constructor() {
     this.tweets = require('../../../../models/tweets.model');
     this.logger = require('../../../../commons/logger/logger');
+    this.ips = require('../../../../models/ips.model');
     this.getQuestions = this.getQuestions.bind(this);
     this.saveQuestion = this.saveQuestion.bind(this);
   }
@@ -11,6 +12,12 @@ class VotingController {
   async getQuestions(req, res, next) {
     this.logger.info('POST /getQuestions received');
     const { ids } = req.body;
+
+    console.log(req.connection.remoteAddress);
+    console.log(req.ip);
+    console.log(req.ips);
+
+    await this.ips.findOneAndUpdate({ IP: req.connection.remoteAddress }, { $inc: { Access: 1 } }, { upsert: true });
 
     const list = await this.tweets.find({ status: 'tone' }).sort({ 'voting.fetched': 0 }).limit(5).lean();
     let filteredList = [];

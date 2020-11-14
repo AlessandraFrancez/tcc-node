@@ -12,7 +12,17 @@ class WordsController {
     this.logger.info('POST /getWords received');
     const { ids } = req.body;
 
-    const list = await this.Dictionary.find({ 'replacement': { $exists: false }, 'ignore': { $exists: false } }).limit(10).lean();
+    const list = await this.Dictionary.find({
+      $or: [
+        { replacement: { $exists: true } },
+        {
+          $and:
+            [
+              { ignore: { $exists: true } }, { ignore: true }
+            ]
+        }
+      ]
+    }).limit(10).lean();
     let filteredList = [];
     list.map(item => {
       filteredList.push({

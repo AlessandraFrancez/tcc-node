@@ -1,14 +1,9 @@
 TODO
 
-- Tirar links http(s)
 - Configurar sinônimos das entidades com o nome dos usuários (ex: @vivobr)
 - Pegar spelling corrections do Watson Assistant
-- Corrigir letras repetidas
-- Obter palavras não traduzidas
-
 
 - Perguntar nome para poder responder quantos voluntários tivemos
-- Olhar para frases traduzidas e ver novos tratamentos para padronizar dados
 - Criar job de analisar dados ao longo do tempo para gerar gráficos
 - Pensar nos gráficos
 - Olhar para tweets e popular intenções
@@ -34,3 +29,49 @@ Melhorias
 - Deixar selecionar no texto
 - Integração com google
 - Trocar jwt secret
+
+
+Gráficos
+
+Análises gerais
+- % de intenções
+- % de empresas
+- Intenções por empresas
+
+Análises da qualidade do app
+
+
+
+Módulo - Watson Assistant
+
+Intenção reconhecida vs intenção votada
+
+Módulo - Watson Tone Analyser 
+
+Sentimento reconhecido (Joy, Anger, Fear or Sadness) vs Form (Elogio ou qualquer outro --irrelevante --outros)
+
+Módulo - Watson Language Translator
+
+Média da nota da tradução
+Média de palavras erradas por tweets
+Relação de tweets com e sem palavras erradas
+Causa das palavras não traduzidas - adicionar lógica de ver palavras não traduzidas
+
+Análises cruzadas 
+
+Notas de tradução com base no sentimento identificado
+
+
+
+
+
+Anger - Sempre negativo
+Fear - Quase sempre neg
+Joy - Sempre positivo
+Sadness - Sempre negativo
+Analytical - ???
+Confident - ?? Pode ser positivo
+Tentative - 
+
+ 
+

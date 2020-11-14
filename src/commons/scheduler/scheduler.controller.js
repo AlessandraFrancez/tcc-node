@@ -19,6 +19,7 @@ class Scheduler {
     this.dataReviewJob(false, false);
     this.runGetUntranslatedJob(false, false);
     this.runStatsJob(true, true);
+    // this.SchedulerUtils.getTones();
   }
 
   async scheduleJob(cronParam, job) {
