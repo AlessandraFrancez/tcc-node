@@ -13,12 +13,12 @@ class WordsController {
     const { ids } = req.body;
 
     const list = await this.Dictionary.find({
-      $or: [
-        { replacement: { $exists: true } },
+      $and: [
+        { replacement: { $exists: false } },
         {
           $and:
             [
-              { ignore: { $exists: true } }, { ignore: true }
+              { ignore: { $exists: true } }, { ignore: false }
             ]
         }
       ]
