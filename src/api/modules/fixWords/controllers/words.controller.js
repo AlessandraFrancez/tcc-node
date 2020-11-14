@@ -56,6 +56,7 @@ class WordsController {
         word.replacement = data.replacement;
       } else {
         word.ignore = true;
+        word.reason = data.reason;
       }
       await word.save();
     } else {

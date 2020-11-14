@@ -7,7 +7,8 @@ const DictSchema = new Schema({
   word: { type: String, required: true },
   replacement: { type: String },
   type: { type: String, required: true },
-  ignore: { type: Boolean, default: false }
+  ignore: { type: Boolean, default: false },
+  reason: { type: String }
 }, {
   timestamps: true
 });

@@ -6,6 +6,7 @@ class SchedulerUtils {
     this.Dictionary = require('../../models/dictionaries.model');
     this.logger = require('../logger/logger');
     this.moment = require('moment-timezone');
+    this.Ips = require('../../models/ips.model');
   }
 
   async getUntranslatedWords() {
@@ -61,6 +62,7 @@ class SchedulerUtils {
         ]
       }),
       wordsTotal: await this.Dictionary.countDocuments({}),
+      volunteers: await this.Ips.countDocuments({}),
       lastUpdate: this.moment.tz('America/Sao_Paulo').format('HH:mm:SS DD/MM/YYYY')
     };
     global.STATS = stats;
