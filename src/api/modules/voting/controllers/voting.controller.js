@@ -9,15 +9,23 @@ class VotingController {
     this.saveQuestion = this.saveQuestion.bind(this);
   }
 
+  async storeIp(ip) {
+    const crypto = require('crypto');
+
+    const secret = process.env.SHA_SECRET;
+    const hash = crypto.createHmac('sha256', secret)
+      .update(ip)
+      .digest('hex');
+    console.log(hash);
+
+    await this.ips.findOneAndUpdate({ IP: hash }, { $inc: { Access: 1 } }, { upsert: true });
+  }
+
   async getQuestions(req, res, next) {
     this.logger.info('POST /getQuestions received');
     const { ids } = req.body;
 
-    console.log(req.connection.remoteAddress);
-    console.log(req.ip);
-    console.log(req.ips);
-
-    await this.ips.findOneAndUpdate({ IP: req.connection.remoteAddress }, { $inc: { Access: 1 } }, { upsert: true });
+    await this.storeIp(req.connection.remoteAddress);
 
     const list = await this.tweets.find({ status: 'tone' }).sort({ 'voting.fetched': 0 }).limit(5).lean();
     let filteredList = [];
