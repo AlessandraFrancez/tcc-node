@@ -28,6 +28,7 @@ const TweetsSchema = new Schema(
   {
     id: { type: String, required: true, unique: true },
     createdAt: { type: Date, expires: 60 * 60 * 24 * 90, default: Date.now }, // TTL
+    kibana: { type: Number, default: 0 },
     checked: { type: Boolean, default: false },
     text: { type: String, required: true },
     originalText: { type: String },

@@ -68,7 +68,7 @@ class VotingController {
     }
 
     Object.keys(data).forEach(item => {
-      if (data[item]) {
+      if (data[item] !== undefined) {
         if (tweet.voting[item]) {
           tweet.voting[item].push(data[item]);
         } else {

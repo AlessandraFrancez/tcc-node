@@ -8,7 +8,8 @@ const DictSchema = new Schema({
   replacement: { type: String },
   type: { type: String, required: true },
   ignore: { type: Boolean, default: false },
-  reason: { type: String }
+  reason: { type: String },
+  kibana: { type: Number, default: 0 }
 }, {
   timestamps: true
 });
