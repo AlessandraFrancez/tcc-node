@@ -27,7 +27,7 @@ const VotingSchema = new Schema(
 const TweetsSchema = new Schema(
   {
     id: { type: String, required: true, unique: true },
-    createdAt: { type: Date, expires: 60 * 60 * 24 * 90, default: Date.now }, // TTL
+    createdAt: { type: Date, default: Date.now },
     kibana: { type: Number, default: 0 },
     checked: { type: Boolean, default: false },
     text: { type: String, required: true },
@@ -47,6 +47,7 @@ const TweetsSchema = new Schema(
     tones: { type: Array },
     watsonTranslation: { type: String },
     googleTranslation: { type: String },
+    sentiment: { type: Object },
     voting: { type: VotingSchema, required: true, default: { fetched: 0 } }
   },
   {

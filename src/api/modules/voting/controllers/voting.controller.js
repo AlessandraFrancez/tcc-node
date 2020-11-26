@@ -27,7 +27,7 @@ class VotingController {
 
     await this.storeIp(req.connection.remoteAddress);
 
-    const list = await this.tweets.find({ status: 'tone' }).sort({ 'voting.fetched': 0 }).limit(5).lean();
+    const list = await this.tweets.find({ status: 'understood' }).sort({ 'voting.fetched': 0 }).limit(5).lean();
     let filteredList = [];
     list.map(item => {
       filteredList.push({

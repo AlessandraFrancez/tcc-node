@@ -8,10 +8,6 @@ class IBMController {
     this.assistant_id = process.env.WATSON_ASSISTANT_ASSISTANT_ID;
     this.version = process.env.WATSON_ASSISTANT_VERSION;
     this.baseUrl = process.env.WATSON_ASSISTANT_URL;
-    this.session = {
-      sessionId: '',
-      time: ''
-    }; // TODO
     this.tweets = require('../../models/tweets.model');
     this.sanitizationController = require('./sanitization.controller');
     this.googleController = require('./google.controller');
@@ -109,6 +105,45 @@ class IBMController {
     }
   }
 
+  async analyzeSentiment(text) {
+
+    try {
+      const res = await this.axios({
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        url: `${process.env.WATSON_NLU_URL}/v1/analyze?version=${process.env.WATSON_NLU_VERSION}`,
+        auth: {
+          username: 'apikey',
+          password: process.env.WATSON_NLU_API_KEY
+        },
+        data: {
+          features: {
+            sentiment: {
+              targets: [text]
+            }
+          },
+          text
+        }
+      });
+
+      const { sentiment } = res.data;
+
+      this.logger.info('[Kibana] Sentiment review', {
+        nluText: text,
+        nluScore: sentiment.targets[0].score,
+        nluLabel: sentiment.targets[0].label
+      });
+
+      return {
+        score: sentiment.targets[0].score,
+        label: sentiment.targets[0].label
+      };
+    } catch (err) {
+      this.logger.error('[Error] [NLU]', err);
+      return { sentiment: {} };
+    }
+  }
+
   /** @description Calls Watson Assistant for every tweet in the correct status (default: sanitized) */
   async runAssistant(status) {
     const tweets = await this.tweets.find({ status });
@@ -151,12 +186,24 @@ class IBMController {
     }
   }
 
+  async runNLU(status) {
+    const tweets = await this.tweets.find({ status }).limit(2000);
+    this.logger.info(`[Data Analysis] Analyzing ${tweets.length} tweets in status ${status}`);
+    for (let i = 0; i < tweets.length; i++) {
+      const tweet = tweets[i];
+      tweet.sentiment = await this.analyzeSentiment(tweet.text);
+      tweet.status = 'understood';
+      await tweet.save();
+    }
+  }
+
   /** @description Runs through all the data analysis steps: Sanitizes data, translates it and fetches sentiment and opinion data for all new tweets */
   async runDataAnalysis() {
-    await this.sanitizationController.handleText('raw');
+    // await this.sanitizationController.handleText('raw');
     // await this.runAssistant('sanitized');
     // await this.runTranslate('assistant');
     // await this.runToneAnalyzer('translated');
+    await this.runNLU('tone');
   }
 }
 
