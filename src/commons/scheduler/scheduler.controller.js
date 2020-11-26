@@ -14,7 +14,7 @@ class Scheduler {
   async initialize() {
     await this.ConfigurationFactory.initialize();
     this.updateConfiguration();
-    this.runTweetsJob(true, true);
+    this.runTweetsJob(false, true);
     this.runAnalysisJob(false, false);
     this.dataReviewJob(false, false);
     this.runGetUntranslatedJob(false, false);
